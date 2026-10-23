@@ -1,18 +1,18 @@
 package main
 
 import (
-	"os"
-	"test/mocking"
-	"time"
+	"log"
+	"net/http"
+	realapp "test/real_app"
 )
 
-type DefaultSleeper struct{}
+type InMemoryPlayerStore struct{}
 
-func (d *DefaultSleeper) Sleep() {
-	time.Sleep(1 * time.Second)
+func (i *InMemoryPlayerStore) GetPlayerScore(name string) int {
+	return 123
 }
 
 func main() {
-	sleeper := &DefaultSleeper{}
-	mocking.Countdown(os.Stdout, sleeper)
+	server := &realapp.PlayerServer{&InMemoryPlayerStore{}}
+	log.Fatal(http.ListenAndServe(":5000", server))
 }
